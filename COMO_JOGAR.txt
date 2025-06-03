@@ -1,0 +1,65 @@
+🏢 COMO JOGAR O SIMULADOR DE AEROPORTO
+========================================
+
+✅ PROJETO LIMPO E PRONTO PARA JOGAR!
+
+🚀 PARA JOGAR (SUPER SIMPLES):
+
+1. Execute: ./start_game.sh
+2. Abra o arquivo: frontend/web_interface.html no navegador
+3. Divirta-se!
+
+📁 ESTRUTURA DO PROJETO:
+   ├── backend/
+   │   ├── airport_controller.py  # Lógica de threads e semáforos  
+   │   ├── api_server.py         # Servidor da API
+   │   └── demo.py              # Demo no terminal
+   ├── frontend/
+   │   └── web_interface.html    # Interface do jogo
+   ├── start_game.sh            # Script para iniciar
+   ├── COMO_JOGAR.txt          # Este arquivo
+   └── README.md               # Documentação
+
+🎯 COMO USAR:
+
+🏢 LADO ESQUERDO (Status do Aeroporto):
+   • Veja quantas pistas estão livres
+   • Veja aviões na fila (threads aguardando semáforo)
+   • Veja aviões em ação (threads executando)
+   • Acompanhe o log de eventos em tempo real
+
+🎮 LADO DIREITO (Controle):
+   • Configure quantas pistas (semáforos) quer ter
+   • Crie aviões personalizados (threads)
+   • Use botões rápidos para criar aviões
+   • Reinicie o aeroporto quando quiser
+
+🧠 O QUE VOCÊ ESTÁ APRENDENDO:
+
+✈️ AVIÕES = THREADS
+   • Cada avião é uma thread independente
+   • Executam tarefas em paralelo
+   • Competem pelos recursos (pistas)
+
+🚦 TORRE DE CONTROLE = SEMÁFORO
+   • Controla quantos aviões podem usar pistas
+   • Bloqueia aviões quando não há pistas livres
+   • Libera aviões quando pistas ficam disponíveis
+
+🛬 PISTAS = RECURSOS COMPARTILHADOS
+   • Limitadas em número
+   • Apenas N aviões podem usar simultaneamente
+   • Gerenciadas pelo semáforo
+
+🎯 EXPERIMENTE:
+
+1. Crie 1 pista e vários aviões → Veja a fila se formar!
+2. Crie 5 pistas e poucos aviões → Todos executam juntos!
+3. Crie aviões com durações diferentes → Veja a dinâmica!
+4. Use os botões rápidos para criar múltiplos aviões!
+
+🔄 SE ALGO DER ERRADO:
+   • Clique "Reiniciar Aeroporto"
+   • Ou feche e execute novamente: ./start_game.sh
+
+🎉 DIVIRTA-SE APRENDENDO THREADS E SEMÁFOROS!

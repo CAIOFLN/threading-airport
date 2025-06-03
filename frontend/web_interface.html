@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏢 Simulador de Aeroporto - Threads e Semáforos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 200px);
+        }
+
+        .airport-status {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .control-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .runway-status {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .runway-indicator {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .planes-section {
+            margin-bottom: 30px;
+        }
+
+        .planes-list {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .plane-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            border-left: 4px solid #10b981;
+        }
+
+        .plane-item.waiting {
+            border-left-color: #f59e0b;
+        }
+
+        .plane-item.active {
+            border-left-color: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .events-log {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .event-item {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .control-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 1em;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            color: white;
+        }
+
+        .btn-config {
+            background: linear-gradient(45deg, #7c3aed, #8b5cf6);
+            color: white;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .status-connected {
+            background: #10b981;
+        }
+
+        .status-disconnected {
+            background: #ef4444;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈️ SIMULADOR DE AEROPORTO ✈️</h1>
+            <p>Torre de Controle = Semáforo | Aviões = Threads | Pistas = Recursos Compartilhados</p>
+        </div>
+
+        <div class="status-indicator" id="connectionStatus">
+            🔴 Desconectado
+        </div>
+
+        <div class="main-layout">
+            <div class="airport-status">
+                <div class="section-title">
+                    🏢 STATUS DO AEROPORTO
+                </div>
+
+                <div class="runway-status">
+                    <div class="runway-indicator" id="runwayIndicator">🛬</div>
+                    <div id="runwayStatus">Pistas: 0/0 disponíveis</div>
+                </div>
+
+                <div class="planes-section">
+                    <div class="section-title">⏳ AVIÕES AGUARDANDO</div>
+                    <div class="planes-list scrollbar-custom" id="waitingPlanes">
+                        <div class="plane-item waiting">Nenhum avião aguardando</div>
+                    </div>
+                </div>
+
+                <div class="planes-section">
+                    <div class="section-title">🚀 AVIÕES EM AÇÃO</div>
+                    <div class="planes-list scrollbar-custom" id="activePlanes">
+                        <div class="plane-item">Nenhum avião ativo</div>
+                    </div>
+                </div>
+
+                <div class="planes-section">
+                    <div class="section-title">📋 LOG DE EVENTOS</div>
+                    <div class="events-log scrollbar-custom" id="eventsLog">
+                        <div class="event-item">Sistema iniciado - Aguardando conexão com o servidor...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="section-title">
+                    🎮 PAINEL DE CONTROLE
+                </div>
+
+                <div class="control-section">
+                    <h3>⚙️ Configuração do Aeroporto</h3>
+                    <div class="form-group">
+                        <label for="runwaysCount">Número de Pistas:</label>
+                        <select id="runwaysCount">
+                            <option value="1">1 Pista</option>
+                            <option value="2" selected>2 Pistas</option>
+                            <option value="3">3 Pistas</option>
+                            <option value="4">4 Pistas</option>
+                            <option value="5">5 Pistas</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-config" onclick="configureAirport()">🔧 Configurar Aeroporto</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>✈️ Criar Avião</h3>
+                    <div class="form-group">
+                        <label for="planeName">Nome do Avião:</label>
+                        <input type="text" id="planeName" placeholder="Ex: Boeing-747">
+                    </div>
+                    <div class="form-group">
+                        <label>Ação:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="actionTakeoff" name="action" value="decolar" checked>
+                                <label for="actionTakeoff">🛫 Decolar</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="actionLanding" name="action" value="pousar">
+                                <label for="actionLanding">🛬 Pousar</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="planeDuration">Duração (segundos):</label>
+                        <input type="number" id="planeDuration" value="3" min="1" max="30">
+                    </div>
+                    <button class="btn btn-primary" onclick="createPlane()">🚀 Criar Avião</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>⚡ Criação Rápida</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-secondary" onclick="quickCreatePlane('decolar', 3)">🛫 Decolar (3s)</button>
+                        <button class="btn btn-secondary" onclick="quickCreatePlane('pousar', 5)">🛬 Pousar (5s)</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" onclick="resetAirport()">🔄 Reiniciar Aeroporto</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api';
+        let planeCounter = 1;
+        let updateInterval;
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            startUpdates();
+        });
+
+        function startUpdates() {
+            updateInterval = setInterval(updateStatus, 1000);
+            updateStatus(); // Primeira atualização imediata
+        }
+
+        async function updateStatus() {
+            try {
+                // Atualizar status do aeroporto
+                const statusResponse = await fetch(`${API_URL}/status`);
+                const statusData = await statusResponse.json();
+                
+                if (statusData.success) {
+                    updateAirportDisplay(statusData.data);
+                    updateConnectionStatus(true);
+                }
+
+                // Atualizar eventos
+                const eventsResponse = await fetch(`${API_URL}/events?limit=20`);
+                const eventsData = await eventsResponse.json();
+                
+                if (eventsData.success) {
+                    updateEventsLog(eventsData.data);
+                }
+
+            } catch (error) {
+                updateConnectionStatus(false);
+                console.error('Erro ao atualizar status:', error);
+            }
+        }
+
+        function updateAirportDisplay(data) {
+            // Atualizar status das pistas
+            const runwayStatus = document.getElementById('runwayStatus');
+            runwayStatus.textContent = `Pistas: ${data.available_runways}/${data.total_runways} disponíveis`;
+
+            // Atualizar aviões aguardando
+            const waitingPlanes = document.getElementById('waitingPlanes');
+            if (data.waiting_planes.length === 0) {
+                waitingPlanes.innerHTML = '<div class="plane-item waiting">Nenhum avião aguardando</div>';
+            } else {
+                waitingPlanes.innerHTML = data.waiting_planes.map(plane => 
+                    `<div class="plane-item waiting">✈️ ${plane.name} - ${plane.action} (${plane.duration}s)</div>`
+                ).join('');
+            }
+
+            // Atualizar aviões ativos
+            const activePlanes = document.getElementById('activePlanes');
+            if (data.active_planes.length === 0) {
+                activePlanes.innerHTML = '<div class="plane-item">Nenhum avião ativo</div>';
+            } else {
+                activePlanes.innerHTML = data.active_planes.map(plane => {
+                    const remaining = Math.max(0, plane.duration - (plane.elapsed_time || 0));
+                    return `<div class="plane-item active">🚀 ${plane.name} - ${plane.action} (${remaining.toFixed(1)}s restante)</div>`;
+                }).join('');
+            }
+        }
+
+        function updateEventsLog(events) {
+            const eventsLog = document.getElementById('eventsLog');
+            if (events.length === 0) return;
+
+            eventsLog.innerHTML = events.map(event => 
+                `<div class="event-item">[${event.time_str}] ${event.message}</div>`
+            ).join('');
+            
+            // Scroll para o final
+            eventsLog.scrollTop = eventsLog.scrollHeight;
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.textContent = '🟢 Conectado';
+                statusElement.className = 'status-indicator status-connected';
+            } else {
+                statusElement.textContent = '🔴 Desconectado';
+                statusElement.className = 'status-indicator status-disconnected';
+            }
+        }
+
+        async function createPlane() {
+            const name = document.getElementById('planeName').value.trim() || `Avião-${planeCounter++}`;
+            const action = document.querySelector('input[name="action"]:checked').value;
+            const duration = parseFloat(document.getElementById('planeDuration').value);
+
+            try {
+                const response = await fetch(`${API_URL}/plane/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, action, duration })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ ${result.data.message}`);
+                    document.getElementById('planeName').value = '';
+                } else {
+                    alert(`❌ Erro: ${result.error}`);
+                }
+            } catch (error) {
+                alert('❌ Erro de conexão com o servidor');
+            }
+        }
+
+        async function quickCreatePlane(action, duration) {
+            const name = `Avião-${planeCounter++}`;
+            
+            try {
+                const response = await fetch(`${API_URL}/plane/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, action, duration })
+                });
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    alert(`❌ Erro: ${result.error}`);
+                }
+            } catch (error) {
+                alert('❌ Erro de conexão com o servidor');
+            }
+        }
+
+        async function configureAirport() {
+            const runways = parseInt(document.getElementById('runwaysCount').value);
+            
+            try {
+                const response = await fetch(`${API_URL}/airport/config`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ runways })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ ${result.message}`);
+                } else {
+                    alert(`❌ Erro: ${result.error}`);
+                }
+            } catch (error) {
+                alert('❌ Erro de conexão com o servidor');
+            }
+        }
+
+        async function resetAirport() {
+            if (!confirm('Deseja reiniciar o aeroporto? Todos os aviões serão removidos.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/airport/reset`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ ${result.message}`);
+                    planeCounter = 1;
+                } else {
+                    alert(`❌ Erro: ${result.error}`);
+                }
+            } catch (error) {
+                alert('❌ Erro de conexão com o servidor');
+            }
+        }
+    </script>
+</body>
+</html>

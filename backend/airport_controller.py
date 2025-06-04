@@ -123,7 +123,10 @@ class AirportController:
         active_planes = []
         completed_planes = []
         
-        for plane in self.planes.values():
+        # Ordenar aviões por ordem de criação para manter fila cronológica
+        sorted_planes = sorted(self.planes.values(), key=lambda p: p.created_at)
+        
+        for plane in sorted_planes:
             plane_info = {
                 "id": plane.id,
                 "name": plane.name,
@@ -153,6 +156,39 @@ class AirportController:
         """Retorna os eventos mais recentes"""
         with self.log_lock:
             return self.event_log[-limit:] if self.event_log else []
+    
+    def configure_runways(self, new_runway_count: int):
+        """Reconfigura o número de pistas do aeroporto"""
+        if new_runway_count < 1:
+            raise ValueError("Número de pistas deve ser pelo menos 1")
+        
+        old_count = self.max_runways
+        self.max_runways = new_runway_count
+        
+        # Criar novo semáforo com o número correto de pistas
+        self.runway_semaphore = threading.Semaphore(new_runway_count)
+        
+        self.log_event(f"🔧 Aeroporto reconfigurado: {old_count} → {new_runway_count} pistas")
+    
+    def reset_airport(self):
+        """Reseta o aeroporto, removendo todos os aviões"""
+        # Parar todas as threads ativas
+        self.shutdown_event.set()
+        
+        # Aguardar threads terminarem
+        for thread in self.active_threads:
+            thread.join(timeout=1.0)
+        
+        # Limpar dados
+        self.planes.clear()
+        self.active_threads.clear()
+        self.event_log.clear()
+        
+        # Recriar semáforo e reset do evento de shutdown
+        self.runway_semaphore = threading.Semaphore(self.max_runways)
+        self.shutdown_event.clear()
+        
+        self.log_event("🔄 Aeroporto resetado - todas as operações foram canceladas")
     
     def shutdown(self):
         """Encerra todas as threads"""

@@ -1,102 +1,199 @@
-# 🏢 Simulador de Aeroporto - Threads e Semáforos
+# ✈️ Simulador de Aeroporto - Threads e Semáforos
 
-Um jogo educativo que explica conceitos de threads e semáforos usando a metáfora de um aeroporto.
+Um jogo educativo interativo que explica conceitos de **threads** e **semáforos** usando a metáfora visual de um aeroporto. Desenvolvido para ensinar programação concorrente de forma prática e divertida!
 
-## 📖 Conceitos Demonstrados
+## 🎯 Conceitos Demonstrados
 
-- **🏗️ Threads (Aviões)**: Cada avião é uma thread independente que executa uma tarefa (pousar ou decolar)
-- **🚦 Semáforos (Torre de Controle)**: Controlam o acesso às pistas (recursos compartilhados limitados)
-- **🛬 Recursos Compartilhados (Pistas)**: Apenas um número limitado de aviões pode usar as pistas simultaneamente
-- **⏳ Sincronização**: Os aviões devem aguardar sua vez para usar as pistas
+- **✈️ Threads (Aviões)**: Cada avião é uma thread independente executando uma tarefa
+- **🏗️ Semáforos (Torre de Controle)**: Controlam acesso às pistas (recursos limitados)
+- **🛫 Recursos Compartilhados (Pistas)**: Múltiplas threads competindo por recursos
+- **⏳ Sincronização**: Coordenação entre threads sem race conditions
+- **📋 Fila Cronológica**: Primeiro a chegar, primeiro a ser atendido (FIFO)
 
-## 🚀 COMO JOGAR
+## 🚀 Como Executar
 
-### Execução Simples 🎮
+### Execução Rápida 🎮
 ```bash
+chmod +x start_game.sh
 ./start_game.sh
 ```
-Depois abra o arquivo `frontend/web_interface.html` no navegador!
+Depois abra: `frontend/web_interface.html` no navegador!
 
 ### Execução Manual 🔧
 ```bash
-cd backend && python3 api_server.py
+cd backend
+python3 api_server.py
 ```
-Depois abra `frontend/web_interface.html` no navegador.
+Em seguida, abra `frontend/web_interface.html` no navegador.
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura do Projeto
 
 ```
 TrabSO/
-├── backend/
-│   ├── airport_controller.py    # Lógica de threads e semáforos
-│   ├── api_server.py           # API REST
-│   └── demo.py                 # Demonstração no terminal
-├── frontend/
-│   └── web_interface.html      # Interface web
-├── start_game.sh              # Script para iniciar
-├── COMO_JOGAR.txt            # Guia completo
-└── README.md                 # Este arquivo
+├── backend/                    # Lógica do servidor
+│   ├── airport_controller.py   # ⚙️ Core: Threads + Semáforos
+│   ├── api_server.py          # 🌐 API REST (Flask)
+│   ├── demo.py               # 🖥️ Demonstração terminal
+│   └── requirements.txt      # 📦 Dependências Python
+├── frontend/                 # Interface do usuário
+│   └── web_interface.html    # 🎨 Interface web completa
+├── start_game.sh            # 🚀 Script de execução
+├── COMO_JOGAR.txt          # 📖 Manual detalhado
+└── README.md               # 📄 Este arquivo
 ```
+
+## 🎮 Funcionalidades Principais
+
+### 🖥️ Interface Visual Avançada
+- **📊 Painel em Tempo Real**: Status dinâmico do aeroporto
+- **🛫 Pistas Animadas**: Visualização das operações em progresso
+- **📋 Filas Separadas**: Pouso e decolagem com ordem cronológica
+- **🏆 Próximo Avião**: Destaque visual do próximo na fila global
+- **📈 Estatísticas**: Contadores de aviões e pistas em tempo real
+
+### ✈️ Sistema de Aviões Inteligente
+- **🎲 Nomes Reais**: 40+ nomes de aviões comerciais brasileiros e internacionais
+- **⚡ Criação Rápida**: Botões para gerar aviões instantaneamente
+- **🎯 Distribuição Inteligente**: Balanceamento automático entre múltiplas pistas
+- **🔄 Animações Realistas**: Movimento linear sincronizado com duração
+
+### ⚙️ Configurações Flexíveis
+- **🛫 Pistas**: 1-5 pistas configuráveis (controle do semáforo)
+- **⏱️ Duração**: 1-30 segundos por operação
+- **🔄 Reset Completo**: Limpar todas as operações
+- **📊 Monitoramento**: Log detalhado de todas as ações
 
 ## 🎮 Como Usar
 
-### 🏢 Status do Aeroporto (Lado Esquerdo)
-- **Pistas Disponíveis**: Mostra quantas pistas estão livres
-- **Aviões Aguardando**: Lista os aviões na fila (threads bloqueadas pelo semáforo)
-- **Aviões em Ação**: Mostra os aviões usando as pistas atualmente
-- **Log de Eventos**: Histórico detalhado de todas as ações
+### 🏢 Área do Aeroporto (Esquerda)
+- **🛫 Pistas Visuais**: Veja aviões em ação em tempo real
+- **📊 Estatísticas Dinâmicas**: Total, aguardando, ativos, pistas livres
+- **🛬 Fila de Pouso**: Aviões aguardando para pousar (ordem cronológica)
+- **🛫 Fila de Decolagem**: Aviões aguardando para decolar (ordem cronológica)
+- **👑 Próximo Avião**: Destaque verde para o próximo da fila global
 
-### 🎮 Painel de Controle (Lado Direito)
-- **Configurar Aeroporto**: Define o número de pistas (valor do semáforo)
-- **Criar Avião**: Cria uma nova thread com:
-  - Nome personalizado
-  - Ação (pousar ou decolar)
-  - Duração da operação
-- **Criação Rápida**: Botões para criar aviões rapidamente
-- **Reiniciar**: Limpa todo o aeroporto
+### 🎮 Painel de Controle (Direita)
+- **⚙️ Configurar Aeroporto**: 1-5 pistas (valor do semáforo)
+- **✈️ Criar Avião Manual**: Nome personalizado, ação e duração
+- **🎲 Gerador de Nomes**: Botão para nomes de aviões reais
+- **⚡ Criação Rápida**: Botões para pouso (5s) e decolagem (3s)
+- **🔄 Reset**: Cancela todas as operações
 
-## 🧠 Explicação dos Conceitos
+## 🔬 Explicação Técnica dos Conceitos
 
-### Threads (Aviões)
-Cada avião é uma thread independente que:
-1. É criada quando você clica "Criar Avião"
-2. Executa sua função (`_plane_worker`) de forma concorrente
-3. Tenta adquirir uma pista (semáforo)
-4. Executa sua ação (pouso/decolagem)
-5. Libera a pista para outros aviões
+### 🧵 Threads (Aviões)
+Cada avião representa uma **thread independente** que:
 
-### Semáforos (Torre de Controle)
-A torre de controle usa um semáforo para:
-1. Controlar quantos aviões podem usar pistas simultaneamente
-2. Bloquear aviões quando todas as pistas estão ocupadas
-3. Liberar aviões quando uma pista fica disponível
-4. Evitar condições de corrida (race conditions)
+1. **Criação**: Nasce quando você clica "Criar Avião"
+2. **Espera**: Tenta adquirir o semáforo (pista livre)
+3. **Execução**: Realiza sua operação (pouso/decolagem)
+4. **Liberação**: Libera o recurso para outros
+5. **Finalização**: Thread termina automaticamente
 
-### Sincronização
-- Aviões aguardam automaticamente quando não há pistas disponíveis
-- O semáforo garante que apenas N aviões (N = número de pistas) estejam ativos
-- Threads são sincronizadas sem necessidade de polling ou busy waiting
+```python
+def _plane_worker(self, plane_id):
+    # Thread do avião executando independentemente
+    self.runway_semaphore.acquire()  # 🔒 Bloqueia se necessário
+    # ... executa operação ...
+    self.runway_semaphore.release()  # 🔓 Libera para outros
+```
 
-## 🔧 Configurações
+### 🚦 Semáforos (Torre de Controle)
+A **torre de controle** implementa um semáforo que:
 
-- **Pistas**: 1 a 5 (valor do semáforo)
-- **Duração das Operações**: 1 a 30 segundos
-- **Tipos de Operação**: Pouso ou Decolagem
-- **Nomes**: Personalizáveis ou gerados automaticamente
+- **🔢 Contador**: Define quantas pistas existem (1-5)
+- **🚫 Bloqueio**: Para threads quando recursos esgotam
+- **✅ Liberação**: Permite threads quando recursos ficam livres
+- **⚖️ Equidade**: FIFO - primeiro a chegar, primeiro atendido
 
-## 📊 Monitoramento
+```python
+# Semáforo com N pistas
+self.runway_semaphore = threading.Semaphore(max_runways)
+```
 
-O sistema fornece:
-- Status em tempo real de todas as threads
-- Log detalhado de eventos com timestamps
-- Visualização clara da fila de espera
-- Indicadores visuais do estado do sistema
+### 🔄 Sincronização e Ordem Cronológica
+- **📋 Fila Global**: Mantém ordem de chegada independente da ação
+- **🎯 Próximo Real**: Apenas UM avião marcado como "PRÓXIMO"
+- **⚡ Sem Race Conditions**: Semáforo previne conflitos
+- **🔒 Thread-Safe**: Operações atômicas garantidas
 
-## 🎯 Objetivos Educacionais
+## 📝 Exemplos de Uso Educacional
 
-1. **Entender Threads**: Ver como múltiplas tarefas executam simultaneamente
-2. **Compreender Semáforos**: Observar como recursos limitados são controlados
-3. **Visualizar Sincronização**: Acompanhar aviões aguardando e sendo liberados
-4. **Experimentar**: Testar diferentes configurações e cenários
+### 🎯 Cenário 1: Entendendo Bloqueio de Threads
+1. Configure **1 pista** no aeroporto
+2. Crie **3 aviões** rapidamente
+3. Observe: Apenas 1 ativo, 2 aguardando (threads bloqueadas)
 
-Este simulador torna conceitos abstratos de programação concorrente tangíveis e visuais!
+### 🎯 Cenário 2: Teste de Concorrência
+1. Configure **3 pistas**
+2. Crie **5 aviões** com durações longas (10s)
+3. Veja 3 threads executando simultaneamente
+
+### 🎯 Cenário 3: Ordem Cronológica
+1. Configure **1 pista**
+2. Crie: Pouso → Pouso → Decolagem → Pouso
+3. Observe que apenas o PRIMEIRO tem marcação "PRÓXIMO"
+
+## 🛠️ Tecnologias Utilizadas
+
+### Backend (Python)
+- **🐍 Threading**: Módulo nativo para threads
+- **🔒 Semaphore**: Sincronização de threads
+- **🌐 Flask**: API REST para comunicação
+- **📦 JSON**: Serialização de dados
+
+### Frontend (Web)
+- **🎨 HTML5/CSS3**: Interface moderna e responsiva
+- **⚡ JavaScript**: Comunicação assíncrona com backend
+- **🔄 Fetch API**: Requisições HTTP
+- **🎭 Animações CSS**: Movimento dos aviões
+
+## 🎓 Objetivos Educacionais Alcançados
+
+### ✅ Conceitos Fundamentais
+- **Threads**: Execução concorrente visualizada
+- **Semáforos**: Controle de recursos limitados
+- **Sincronização**: Coordenação sem conflitos
+- **Race Conditions**: Como evitar com semáforos
+
+### ✅ Habilidades Práticas
+- **Debugging Concorrente**: Ver threads em ação
+- **Performance**: Balanceamento de carga entre pistas
+- **Arquitetura**: Separação backend/frontend
+- **APIs REST**: Comunicação entre sistemas
+
+## 🏆 Características Avançadas
+
+### 🎨 Interface Intuitiva
+- Design responsivo e moderno
+- Cores e animações educativas
+- Status em tempo real
+- Feedback visual imediato
+
+### ⚡ Performance Otimizada
+- Distribuição inteligente entre pistas
+- Animações sincronizadas com threads
+- Atualização eficiente da interface
+- Gerenciamento automático de recursos
+
+### 🔧 Código Limpo
+- Arquitetura modular
+- Documentação completa
+- Tratamento robusto de erros
+- Padrões de código Python
+
+---
+
+## 🚀 Para Professores
+
+Este simulador é ideal para:
+- **Aulas de Sistemas Operacionais**
+- **Programação Concorrente**
+- **Disciplinas de Python**
+- **Conceitos de Sincronização**
+
+Os alunos podem **experimentar**, **observar** e **compreender** como threads e semáforos funcionam na prática, tornando conceitos abstratos em experiências visuais e interativas!
+
+---
+
+**Desenvolvido para tornar o aprendizado de programação concorrente divertido e visual! ✈️🎓**

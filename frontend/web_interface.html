@@ -42,17 +42,281 @@
 
         .main-layout {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 3fr 1fr;
             gap: 30px;
             height: calc(100vh - 200px);
         }
 
-        .airport-status {
+        .airport-visual {
             background: rgba(255,255,255,0.1);
             border-radius: 15px;
             padding: 25px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .airport-view {
+            flex: 1;
+            background: linear-gradient(135deg, #065f46, #047857);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            border: 3px solid #10b981;
+        }
+
+        .runway {
+            position: absolute;
+            background: #374151;
+            border: 2px solid #f59e0b;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .runway:nth-child(odd) {
+            background: #4b5563;
+        }
+
+        .runway-label {
+            background: #1f2937;
+            color: #f59e0b;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .runway-centerline {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: repeating-linear-gradient(
+                to right,
+                #f59e0b 0px,
+                #f59e0b 20px,
+                transparent 20px,
+                transparent 40px
+            );
+            transform: translateY(-50%);
+        }
+
+        .plane {
+            position: absolute;
+            font-size: 24px;
+            z-index: 5;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            transition: none;
+        }
+
+        .plane.takeoff {
+            animation: takeoffAnimation linear forwards;
+        }
+
+        .plane.landing {
+            animation: landingAnimation linear forwards;
+        }
+
+        @keyframes takeoffAnimation {
+            0% { 
+                left: 12%;
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                left: 48%;
+                transform: scale(1.15);
+                opacity: 0.9;
+            }
+            100% { 
+                left: 85%;
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes landingAnimation {
+            0% { 
+                left: 85%;
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+            50% {
+                left: 48%;
+                transform: scale(1.15);
+                opacity: 0.9;
+            }
+            100% { 
+                left: 12%;
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .control-tower {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            animation: pulse 2s infinite;
+        }
+
+        .airport-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #10b981;
+        }
+
+        .stat-card.waiting {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.active {
+            border-left-color: #ef4444;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .queue-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .queue-section {
+            margin-bottom: 20px;
+        }
+
+        .queue-section h4 {
+            margin-bottom: 10px;
+            color: #f59e0b;
+            font-size: 1.1em;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .queue-visual {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 50px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+
+        .queue-item {
+            background: rgba(255,255,255,0.1);
+            margin: 0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.9em;
+            transition: all 0.5s ease;
+            position: relative;
+            transform: translateX(0);
+        }
+
+        .queue-item.advancing {
+            animation: advancePosition 0.5s ease-in-out;
+        }
+
+        @keyframes advancePosition {
+            0% { transform: translateX(10px); opacity: 0.7; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .queue-item.next {
+            background: rgba(34, 197, 94, 0.3);
+            border: 2px solid #22c55e;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .queue-item.next::before {
+            content: "PRÓXIMO";
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: #000;
+            font-size: 0.7em;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .queue-item .plane-emoji {
+            font-size: 1.5em;
+            margin-bottom: 2px;
+        }
+
+        .queue-item .plane-name {
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-bottom: 2px;
+        }
+
+        .queue-item .plane-duration {
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+
+        .queue-position {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
         }
 
         .control-panel {
@@ -263,34 +527,47 @@
         </div>
 
         <div class="main-layout">
-            <div class="airport-status">
+            <div class="airport-visual">
                 <div class="section-title">
-                    🏢 STATUS DO AEROPORTO
+                    🛬 AEROPORTO EM TEMPO REAL 🛫
                 </div>
 
-                <div class="runway-status">
-                    <div class="runway-indicator" id="runwayIndicator">🛬</div>
-                    <div id="runwayStatus">Pistas: 0/0 disponíveis</div>
+                <div class="airport-view" id="airportView">
+                    <div class="control-tower">🏗️</div>
+                    <!-- Pistas serão criadas dinamicamente aqui -->
                 </div>
 
-                <div class="planes-section">
-                    <div class="section-title">⏳ AVIÕES AGUARDANDO</div>
-                    <div class="planes-list scrollbar-custom" id="waitingPlanes">
-                        <div class="plane-item waiting">Nenhum avião aguardando</div>
+                <div class="airport-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPlanesCount">0</div>
+                        <div class="stat-label">Total de Aviões</div>
+                    </div>
+                    <div class="stat-card waiting">
+                        <div class="stat-number" id="waitingPlanesCount">0</div>
+                        <div class="stat-label">Aguardando</div>
+                    </div>
+                    <div class="stat-card active">
+                        <div class="stat-number" id="activePlanesCount">0</div>
+                        <div class="stat-label">Em Ação</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="availableRunwaysCount">0</div>
+                        <div class="stat-label">Pistas Livres</div>
                     </div>
                 </div>
 
-                <div class="planes-section">
-                    <div class="section-title">🚀 AVIÕES EM AÇÃO</div>
-                    <div class="planes-list scrollbar-custom" id="activePlanes">
-                        <div class="plane-item">Nenhum avião ativo</div>
+                <div class="queue-display">
+                    <div class="queue-section">
+                        <h4>🛬 FILA PARA POUSO</h4>
+                        <div class="queue-visual" id="landingQueue">
+                            <div class="queue-item">Nenhum avião na fila para pousar</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="planes-section">
-                    <div class="section-title">📋 LOG DE EVENTOS</div>
-                    <div class="events-log scrollbar-custom" id="eventsLog">
-                        <div class="event-item">Sistema iniciado - Aguardando conexão com o servidor...</div>
+                    <div class="queue-section">
+                        <h4>🛫 FILA PARA DECOLAGEM</h4>
+                        <div class="queue-visual" id="takeoffQueue">
+                            <div class="queue-item">Nenhum avião na fila para decolar</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -319,20 +596,17 @@
                     <h3>✈️ Criar Avião</h3>
                     <div class="form-group">
                         <label for="planeName">Nome do Avião:</label>
-                        <input type="text" id="planeName" placeholder="Ex: Boeing-747">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="planeName" placeholder="Ex: Boeing-747" style="flex: 1;">
+                            <button type="button" onclick="generateRandomName()" style="background: #6366f1; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;" title="Gerar nome aleatório">🎲</button>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Ação:</label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="actionTakeoff" name="action" value="decolar" checked>
-                                <label for="actionTakeoff">🛫 Decolar</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="actionLanding" name="action" value="pousar">
-                                <label for="actionLanding">🛬 Pousar</label>
-                            </div>
-                        </div>
+                        <label for="planeAction">Ação:</label>
+                        <select id="planeAction">
+                            <option value="decolar">🛫 Decolagem</option>
+                            <option value="pousar">🛬 Pouso</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="planeDuration">Duração (segundos):</label>
@@ -358,6 +632,40 @@
         const API_URL = 'http://localhost:5001/api';
         let planeCounter = 1;
         let updateInterval;
+        let previousQueues = {
+            landing: [],
+            takeoff: []
+        };
+
+        // Lista de nomes de aviões comerciais reais
+        const REAL_PLANE_NAMES = [
+            // Aviões comerciais famosos
+            'Boeing 737-800', 'Airbus A320', 'Boeing 777-300ER', 'Airbus A350-900',
+            'Boeing 787-9 Dreamliner', 'Embraer E190', 'Boeing 767-300', 'Airbus A330-300',
+            'ATR 72-600', 'Bombardier CRJ-900', 'Boeing 747-8F', 'Airbus A380',
+            'Boeing 737 MAX 8', 'Embraer E175', 'Cessna Citation X',
+            
+            // Companhias aéreas brasileiras com modelos
+            'GOL 737-800', 'LATAM A320', 'Azul E195', 'Avianca A318',
+            'Passaredo ATR-72', 'MAP E190', 'Voepass ATR-42',
+            
+            // Aviões executivos
+            'Learjet 75', 'Citation Sovereign', 'Gulfstream G650', 'King Air 350',
+            'Phenom 300E', 'Legacy 500', 'Falcon 7X', 'Challenger 605',
+            
+            // Aviões de carga
+            'Cargo 767F', 'FedEx MD-11F', 'UPS 747-8F', 'DHL A300F',
+            'TNT 737-400F', 'Correios ATR-42F',
+            
+            // Aviões regionais
+            'Regional E170', 'Saab 340', 'Fokker 100', 'Dornier 328',
+            'Beechcraft 1900', 'Twin Otter DHC-6',
+            
+            // Aviões vintage/especiais
+            'DC-3 Clássico', 'Lockheed Constellation', 'Boeing 707 Vintage',
+            'Caravelle Histórica', 'Bandeirante EMB-110'
+        ];
+        let usedPlaneNames = new Set();
 
         // Inicializar aplicação
         document.addEventListener('DOMContentLoaded', function() {
@@ -395,42 +703,224 @@
         }
 
         function updateAirportDisplay(data) {
-            // Atualizar status das pistas
-            const runwayStatus = document.getElementById('runwayStatus');
-            runwayStatus.textContent = `Pistas: ${data.available_runways}/${data.total_runways} disponíveis`;
+            // Atualizar estatísticas
+            document.getElementById('totalPlanesCount').textContent = data.waiting_planes.length + data.active_planes.length;
+            document.getElementById('waitingPlanesCount').textContent = data.waiting_planes.length;
+            document.getElementById('activePlanesCount').textContent = data.active_planes.length;
+            document.getElementById('availableRunwaysCount').textContent = data.available_runways;
 
-            // Atualizar aviões aguardando
-            const waitingPlanes = document.getElementById('waitingPlanes');
-            if (data.waiting_planes.length === 0) {
-                waitingPlanes.innerHTML = '<div class="plane-item waiting">Nenhum avião aguardando</div>';
-            } else {
-                waitingPlanes.innerHTML = data.waiting_planes.map(plane => 
-                    `<div class="plane-item waiting">✈️ ${plane.name} - ${plane.action} (${plane.duration}s)</div>`
-                ).join('');
-            }
+            // Criar pistas dinamicamente se necessário
+            updateRunwayDisplay(data.total_runways);
 
-            // Atualizar aviões ativos
-            const activePlanes = document.getElementById('activePlanes');
-            if (data.active_planes.length === 0) {
-                activePlanes.innerHTML = '<div class="plane-item">Nenhum avião ativo</div>';
+            // Determinar qual é o próximo avião globalmente (o primeiro da fila geral)
+            const nextPlaneGlobally = data.waiting_planes.length > 0 ? data.waiting_planes[0] : null;
+
+            // Separar filas por ação
+            const landingPlanes = data.waiting_planes.filter(plane => plane.action === 'pousar');
+            const takeoffPlanes = data.waiting_planes.filter(plane => plane.action === 'decolar');
+
+            // Atualizar fila de pouso
+            updateQueue('landingQueue', landingPlanes, 'pousar', nextPlaneGlobally);
+            
+            // Atualizar fila de decolagem
+            updateQueue('takeoffQueue', takeoffPlanes, 'decolar', nextPlaneGlobally);
+
+            // Atualizar aviões nas pistas
+            updatePlanesOnRunways(data.active_planes);
+        }
+
+        function updateQueue(queueId, planes, action, nextPlaneGlobally) {
+            const queueElement = document.getElementById(queueId);
+            const queueType = action === 'pousar' ? 'landing' : 'takeoff';
+            
+            // Verificar se houve mudanças na fila
+            const currentQueue = planes.map(p => p.name);
+            const hasChanged = JSON.stringify(currentQueue) !== JSON.stringify(previousQueues[queueType]);
+            
+            if (planes.length === 0) {
+                const emptyMessage = action === 'pousar' ? 
+                    'Nenhum avião na fila para pousar' : 
+                    'Nenhum avião na fila para decolar';
+                queueElement.innerHTML = `<div class="queue-item">${emptyMessage}</div>`;
             } else {
-                activePlanes.innerHTML = data.active_planes.map(plane => {
-                    const remaining = Math.max(0, plane.duration - (plane.elapsed_time || 0));
-                    return `<div class="plane-item active">🚀 ${plane.name} - ${plane.action} (${remaining.toFixed(1)}s restante)</div>`;
+                queueElement.innerHTML = planes.map((plane, index) => {
+                    // Verificar se este avião é o próximo globalmente, não apenas o primeiro da sua fila
+                    const isNext = nextPlaneGlobally && plane.name === nextPlaneGlobally.name;
+                    const emoji = getPlaneEmoji(plane.action);
+                    const wasAdvanced = hasChanged && previousQueues[queueType].includes(plane.name);
+                    
+                    return `
+                        <div class="queue-item ${isNext ? 'next' : ''} ${wasAdvanced ? 'advancing' : ''}">
+                            <div class="queue-position">${index + 1}</div>
+                            <div class="plane-emoji">${emoji}</div>
+                            <div class="plane-name">${plane.name}</div>
+                            <div class="plane-duration">${plane.duration}s</div>
+                        </div>
+                    `;
                 }).join('');
+
+                // Remover classe de animação após um tempo
+                if (hasChanged) {
+                    setTimeout(() => {
+                        const advancingItems = queueElement.querySelectorAll('.advancing');
+                        advancingItems.forEach(item => item.classList.remove('advancing'));
+                    }, 500);
+                }
+            }
+            
+            // Atualizar fila anterior
+            previousQueues[queueType] = currentQueue;
+        }
+
+        function updateRunwayDisplay(totalRunways) {
+            const airportView = document.getElementById('airportView');
+            const existingRunways = airportView.querySelectorAll('.runway').length;
+
+            if (existingRunways !== totalRunways) {
+                // Remover pistas antigas (exceto torre de controle)
+                const runways = airportView.querySelectorAll('.runway');
+                runways.forEach(runway => runway.remove());
+
+                // Criar novas pistas
+                for (let i = 0; i < totalRunways; i++) {
+                    createRunway(i, totalRunways);
+                }
             }
         }
 
-        function updateEventsLog(events) {
-            const eventsLog = document.getElementById('eventsLog');
-            if (events.length === 0) return;
-
-            eventsLog.innerHTML = events.map(event => 
-                `<div class="event-item">[${event.time_str}] ${event.message}</div>`
-            ).join('');
+        function createRunway(index, total) {
+            const airportView = document.getElementById('airportView');
+            const runway = document.createElement('div');
+            runway.className = 'runway';
+            runway.id = `runway-${index}`;
             
-            // Scroll para o final
-            eventsLog.scrollTop = eventsLog.scrollHeight;
+            const height = 60;
+            const spacing = 20;
+            const totalHeight = (total * height) + ((total - 1) * spacing);
+            const startY = (airportView.offsetHeight - totalHeight) / 2;
+            const yPosition = startY + (index * (height + spacing));
+
+            runway.style.cssText = `
+                left: 10%;
+                right: 10%;
+                top: ${yPosition}px;
+                height: ${height}px;
+            `;
+
+            runway.innerHTML = `
+                <div class="runway-label">PISTA ${index + 1}</div>
+                <div class="runway-centerline"></div>
+            `;
+
+            airportView.appendChild(runway);
+        }
+
+        function updatePlanesOnRunways(activePlanes) {
+            // Obter todas as pistas disponíveis
+            const totalRunways = document.querySelectorAll('.runway').length;
+            
+            // Mapear aviões existentes às suas pistas
+            const existingPlanesByRunway = new Map();
+            const existingPlanes = new Set();
+            
+            document.querySelectorAll('.plane').forEach(planeElement => {
+                const planeKey = planeElement.title;
+                const runwayIndex = parseInt(planeElement.dataset.runwayIndex) || 0;
+                existingPlanes.add(planeKey);
+                
+                if (!existingPlanesByRunway.has(runwayIndex)) {
+                    existingPlanesByRunway.set(runwayIndex, []);
+                }
+                existingPlanesByRunway.get(runwayIndex).push(planeKey);
+            });
+
+            // Remover aviões que não estão mais ativos
+            const currentActivePlanes = new Set(activePlanes.map(plane => `${plane.name} - ${plane.action}`));
+            const planesToRemove = document.querySelectorAll('.plane');
+            planesToRemove.forEach(planeElement => {
+                if (!currentActivePlanes.has(planeElement.title)) {
+                    planeElement.remove();
+                }
+            });
+
+            // Recalcular pistas ocupadas após remoção
+            const occupiedRunways = new Set();
+            document.querySelectorAll('.plane').forEach(planeElement => {
+                const runwayIndex = parseInt(planeElement.dataset.runwayIndex);
+                if (!isNaN(runwayIndex)) {
+                    occupiedRunways.add(runwayIndex);
+                }
+            });
+
+            // Adicionar novos aviões distribuindo inteligentemente entre as pistas
+            const newPlanes = activePlanes.filter(plane => {
+                const planeKey = `${plane.name} - ${plane.action}`;
+                return !existingPlanes.has(planeKey);
+            });
+
+            // Distribuir novos aviões de forma equilibrada
+            newPlanes.forEach((plane, index) => {
+                // Usar distribuição round-robin para equilibrar as pistas
+                let assignedRunway = index % totalRunways;
+                
+                // Se a pista escolhida já estiver ocupada, procurar a próxima disponível
+                let attempts = 0;
+                while (occupiedRunways.has(assignedRunway) && attempts < totalRunways) {
+                    assignedRunway = (assignedRunway + 1) % totalRunways;
+                    attempts++;
+                }
+                
+                // Se todas as pistas estão ocupadas, usar a primeira disponível baseada no índice
+                if (attempts >= totalRunways) {
+                    assignedRunway = index % totalRunways;
+                }
+                
+                occupiedRunways.add(assignedRunway);
+                createPlaneVisual(plane, assignedRunway);
+            });
+        }
+
+        function createPlaneVisual(plane, runwayIndex) {
+            const runway = document.getElementById(`runway-${runwayIndex}`);
+            if (!runway) return;
+
+            const planeElement = document.createElement('div');
+            planeElement.className = `plane ${plane.action === 'decolar' ? 'takeoff' : 'landing'}`;
+            planeElement.innerHTML = getPlaneEmoji(plane.action);
+            planeElement.title = `${plane.name} - ${plane.action}`;
+            planeElement.dataset.runwayIndex = runwayIndex; // Armazenar índice da pista
+
+            // Posicionar avião na pista
+            const initialLeft = plane.action === 'decolar' ? '12%' : '85%';
+            planeElement.style.cssText = `
+                top: ${runway.offsetTop + 15}px;
+                left: ${initialLeft};
+                animation-duration: ${plane.duration}s;
+                animation-timing-function: linear;
+                animation-fill-mode: forwards;
+                animation-iteration-count: 1;
+            `;
+
+            document.getElementById('airportView').appendChild(planeElement);
+
+            // Remover o avião após a animação
+            setTimeout(() => {
+                if (planeElement.parentNode) {
+                    planeElement.remove();
+                }
+            }, plane.duration * 1000 + 500);
+        }
+
+        function getPlaneEmoji(action) {
+            return action === 'decolar' ? '🛫' : '🛬';
+        }
+
+        function updateEventsLog(events) {
+            // Não precisamos mais do log de eventos na interface visual
+            // Os eventos podem ser mostrados no console se necessário
+            if (events.length > 0) {
+                console.log('Últimos eventos:', events);
+            }
         }
 
         function updateConnectionStatus(connected) {
@@ -444,9 +934,38 @@
             }
         }
 
+        function getRandomPlaneName() {
+            // Se todos os nomes foram usados, resetar a lista
+            if (usedPlaneNames.size >= REAL_PLANE_NAMES.length) {
+                usedPlaneNames.clear();
+            }
+            
+            // Filtrar nomes não utilizados
+            const availableNames = REAL_PLANE_NAMES.filter(name => !usedPlaneNames.has(name));
+            
+            // Se não há nomes disponíveis (caso raro), usar formato genérico
+            if (availableNames.length === 0) {
+                return `Avião-${planeCounter++}`;
+            }
+            
+            // Selecionar nome aleatório
+            const randomIndex = Math.floor(Math.random() * availableNames.length);
+            const selectedName = availableNames[randomIndex];
+            
+            // Marcar como usado
+            usedPlaneNames.add(selectedName);
+            
+            return selectedName;
+        }
+
+        function generateRandomName() {
+            const randomName = getRandomPlaneName();
+            document.getElementById('planeName').value = randomName;
+        }
+
         async function createPlane() {
-            const name = document.getElementById('planeName').value.trim() || `Avião-${planeCounter++}`;
-            const action = document.querySelector('input[name="action"]:checked').value;
+            const name = document.getElementById('planeName').value.trim() || getRandomPlaneName();
+            const action = document.getElementById('planeAction').value;
             const duration = parseFloat(document.getElementById('planeDuration').value);
 
             try {
@@ -472,7 +991,7 @@
         }
 
         async function quickCreatePlane(action, duration) {
-            const name = `Avião-${planeCounter++}`;
+            const name = getRandomPlaneName();
             
             try {
                 const response = await fetch(`${API_URL}/plane/create`, {

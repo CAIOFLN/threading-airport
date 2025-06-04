@@ -63,16 +63,8 @@ def create_plane():
 @app.route('/api/airport/reset', methods=['POST'])
 def reset_airport():
     """Reinicia o aeroporto"""
-    global airport
     try:
-        # Shutdown atual
-        airport.shutdown()
-        time.sleep(1)
-        
-        # Criar novo controlador
-        from airport_controller import AirportController
-        airport = AirportController(max_runways=2)
-        
+        airport.reset_airport()
         return jsonify({"success": True, "message": "Aeroporto reiniciado!"})
         
     except Exception as e:
@@ -81,7 +73,6 @@ def reset_airport():
 @app.route('/api/airport/config', methods=['POST'])
 def configure_airport():
     """Configura número de pistas"""
-    global airport
     try:
         data = request.get_json()
         runways = int(data.get('runways', 2))
@@ -89,12 +80,7 @@ def configure_airport():
         if runways < 1 or runways > 5:
             return jsonify({"success": False, "error": "Número de pistas deve ser entre 1 e 5"}), 400
         
-        # Reiniciar com nova configuração
-        airport.shutdown()
-        time.sleep(1)
-        
-        from airport_controller import AirportController
-        airport = AirportController(max_runways=runways)
+        airport.configure_runways(runways)
         
         return jsonify({
             "success": True, 
